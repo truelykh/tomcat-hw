@@ -39,7 +39,7 @@
             <body>
 
                 <h1>Hello World Application</h1>
-                <p>CI/CD: jyoshita</p>
+                <p>CI/CD - sucess</p>
 
                 <form action="hello" method="GET">
                     <label for="name">Enter your name:</label><br><br>
