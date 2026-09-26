@@ -10,7 +10,7 @@ pipeline {
         WAR_FILE = 'target/hello-world-1.0.0.war'
 
         NEXUS_HOST = 'localhost:8081'
-        NEXUS_REPO = 'maven-release-hw'
+        NEXUS_REPO = 'maven-release-hw-raw'
         NEXUS_CRED_ID = 'nexus_credentials'
 
         DOCKER_HOST = 'localhost:8083'
@@ -60,7 +60,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh '''
-                    export PATH="/opt/homebrew/bin:$PATH"
+                    export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
                     docker build -t "$DOCKER_IMAGE:$BUILD_NUMBER" .
                 '''
             }
@@ -76,7 +76,7 @@ pipeline {
                     )
                 ]) {
                     sh '''
-                        export PATH="/opt/homebrew/bin:$PATH"
+                        export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
 
                         echo "$NEXUS_PASS" | docker login "$DOCKER_HOST" \
                         -u "$NEXUS_USER" \
