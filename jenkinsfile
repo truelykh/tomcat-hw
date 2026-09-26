@@ -10,7 +10,7 @@ pipeline {
         WAR_FILE = 'target/hello-world-1.0.0.war'
 
         NEXUS_HOST = 'localhost:8081'
-        NEXUS_REPO = 'maven-release-hw-raw'
+        NEXUS_REPO = 'maven-release-hw'
         NEXUS_CRED_ID = 'nexus_credentials'
 
         DOCKER_HOST = 'localhost:8083'
