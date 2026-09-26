@@ -39,7 +39,7 @@
             <body>
 
                 <h1>Hello World Application</h1>
-                <p>CI/CD - sucess</p>
+                <p>CI/CD - ok</p>
 
                 <form action="hello" method="GET">
                     <label for="name">Enter your name:</label><br><br>
