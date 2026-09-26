@@ -13,7 +13,8 @@ pipeline {
         NEXUS_REPO = 'maven-release-hw'
         NEXUS_CRED_ID = 'nexus_credentials'
 
-        DOCKER_HOST = 'localhost:8083'
+        DOCKER_HOST = 'unix:///Users/rakesh/.docker/run/docker.sock'
+        DOCKER_REGISTRY = 'localhost:8083'
         DOCKER_IMAGE = 'localhost:8083/docker-hw/hello-world'
         DOCKER_CRED_ID = 'nexus_credentials'
 
@@ -61,7 +62,10 @@ pipeline {
             steps {
                 sh '''
                     export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
-                    docker build -t "$DOCKER_IMAGE:$BUILD_NUMBER" .
+                    export DOCKER_HOST="$DOCKER_HOST"
+
+                    docker build \
+                    -t "$DOCKER_IMAGE:$BUILD_NUMBER" .
                 '''
             }
         }
@@ -77,8 +81,9 @@ pipeline {
                 ]) {
                     sh '''
                         export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
+                        export DOCKER_HOST="$DOCKER_HOST"
 
-                        echo "$NEXUS_PASS" | docker login "$DOCKER_HOST" \
+                        echo "$NEXUS_PASS" | docker login "$DOCKER_REGISTRY" \
                         -u "$NEXUS_USER" \
                         --password-stdin
 
