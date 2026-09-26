@@ -14,8 +14,8 @@ pipeline {
         NEXUS_CRED_ID = 'nexus_credentials'
 
         DOCKER_HOST = 'unix:///Users/rakesh/.docker/run/docker.sock'
-        DOCKER_REGISTRY = 'localhost:8083'
-        DOCKER_IMAGE = 'localhost:8083/docker-hw/hello-world'
+        DOCKER_REGISTRY = '127.0.0.1:8083'
+        DOCKER_IMAGE = '127.0.0.1:8083/docker-hw/hello-world'
         DOCKER_CRED_ID = 'nexus_credentials'
 
         TOMCAT_HOST = 'localhost:8082'
