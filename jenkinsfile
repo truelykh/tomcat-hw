@@ -13,8 +13,8 @@ pipeline {
         NEXUS_CRED_ID = 'nexus_credentials'
 
         DOCKER_HOST = 'unix:///Users/rakesh/.docker/run/docker.sock'
-        DOCKER_REGISTRY = '192.168.29.105:8083'
-        DOCKER_IMAGE = '192.168.29.105:8083/docker-hw/hello-world'
+        DOCKER_REGISTRY = 'host.docker.internal:8083'
+        DOCKER_IMAGE = 'host.docker.internal:8083/docker-hw/hello-world'
         DOCKER_CRED_ID = 'nexus_credentials'
 
         TOMCAT_HOST = 'localhost:8082'
@@ -111,16 +111,13 @@ pipeline {
             }
         }
     }
-
     post {
         always {
             archiveArtifacts artifacts: 'target/*.war', fingerprint: true
         }
-
         success {
             echo 'WAR and Docker image deployed successfully'
         }
-
         failure {
             echo 'Pipeline failed'
         }
