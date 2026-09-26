@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = 'hello-world'
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build WAR') {
+            steps {
+                sh '''
+                    export PATH="/opt/homebrew/bin:$PATH"
+                    mvn clean package
+                '''
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh '''
+                    export PATH="/opt/homebrew/bin:$PATH"
+                    mvn test
+                '''
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'target/*.war', fingerprint: true
+        }
+
+        success {
+            echo 'PR validation successful'
+        }
+
+        failure {
+            echo 'PR validation failed'
+        }
+    }
+}
