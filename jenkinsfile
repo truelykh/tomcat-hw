@@ -13,8 +13,12 @@ pipeline {
         NEXUS_REPO = 'maven-releases'
         NEXUS_CRED_ID = 'nexus_credentials'
 
+        DOCKER_HOST = 'localhost:8083'
+        DOCKER_IMAGE = 'localhost:8083/docker-hw/hello-world'
+        DOCKER_CRED_ID = 'nexus_credentials'
+
         TOMCAT_HOST = 'localhost:8082'
-        TOMCAT_CRED_ID = 'tomcat-credentials'
+        TOMCAT_CRED_ID = 'tomcat_credentials'
     }
 
     stages {
@@ -25,13 +29,16 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build WAR') {
             steps {
-                sh 'mvn clean package'
+                sh '''
+                    export PATH="/opt/homebrew/bin:$PATH"
+                    mvn clean package
+                '''
             }
         }
 
-        stage('Upload to Nexus') {
+        stage('Upload WAR to Nexus') {
             steps {
                 withCredentials([
                     usernamePassword(
@@ -45,6 +52,37 @@ pipeline {
                         -u "$NEXUS_USER:$NEXUS_PASS" \
                         --upload-file "$WAR_FILE" \
                         "http://$NEXUS_HOST/repository/$NEXUS_REPO/$APP_NAME/$APP_NAME-$BUILD_NUMBER.war"
+                    '''
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                    export PATH="/opt/homebrew/bin:$PATH"
+                    docker build -t "$DOCKER_IMAGE:$BUILD_NUMBER" .
+                '''
+            }
+        }
+
+        stage('Push Docker Image to Nexus') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: env.DOCKER_CRED_ID,
+                        usernameVariable: 'NEXUS_USER',
+                        passwordVariable: 'NEXUS_PASS'
+                    )
+                ]) {
+                    sh '''
+                        export PATH="/opt/homebrew/bin:$PATH"
+
+                        echo "$NEXUS_PASS" | docker login "$DOCKER_HOST" \
+                        -u "$NEXUS_USER" \
+                        --password-stdin
+
+                        docker push "$DOCKER_IMAGE:$BUILD_NUMBER"
                     '''
                 }
             }
@@ -76,7 +114,7 @@ pipeline {
         }
 
         success {
-            echo 'Deployment successful'
+            echo 'WAR and Docker image deployed successfully'
         }
 
         failure {
